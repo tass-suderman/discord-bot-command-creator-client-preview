@@ -64,7 +64,7 @@
               <b-icon-save-fill />
               Save Command
             </b-btn>
-            <b-btn class="m-3" disabled @click="clearCommand" v-if="commandFormType==='Create'" variant="danger">
+            <b-btn class="m-3" @click="clearCommand" v-if="commandFormType==='Create'" variant="danger">
               <b-icon-x-circle />
               Clear Command
             </b-btn>

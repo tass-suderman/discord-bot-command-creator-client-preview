@@ -1,5 +1,5 @@
 {
-  "name": "cweb280finalprojlevitass",
+  "name": "discord-bot-command-creator-client-preview",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
