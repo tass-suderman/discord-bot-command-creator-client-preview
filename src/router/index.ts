@@ -42,11 +42,6 @@ export default (store:any) => {
       beforeEnter: refreshMemes,
     },
     {
-      path: store.state.LOGIN_PATH,
-      name: 'Login',
-      component: () => import('../views/LoginView.vue'),
-    },
-    {
       path: store.state.COMMANDS_PATH,
       name: 'All Commands',
       component: () => import('../views/command-views/CommandView.vue'),

@@ -7,17 +7,6 @@
     <div class="row w-100" v-if="NotLoading">
       <CommandPreview :command="command" @viewCommand="viewCommand" @editCommand="editCommand" @deleteConfirm="deleteConfirm"
                       v-for="command in $store.state.commands" :key="command.commandID"/>
-      <b-modal title="Delete Command" ok-variant="danger" cancel-variant="primary"
-               v-model="showConfirmDelete" @ok="deleteCommand(commandToDelete)">
-        <template #modal-cancel>
-          <b-icon-x-square-fill /> Cancel
-        </template>
-
-        <template #modal-ok>
-          <b-icon-trash-fill /> Delete
-        </template>
-        Are you sure you want to delete <strong>{{commandToDelete.cName}}</strong>?
-      </b-modal>
     </div>
     <b-card v-else>
       <b-spinner variant="primary" label="Waiting for Data"></b-spinner>
@@ -30,9 +19,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import Command from '@/models/Command';
 import CommandPreview from '@/components/command-components/CommandPreview.vue';
 
-/**
- * CommandList component. Holds an overview of all commands
- */
 @Component({
   components: { CommandPreview },
 })

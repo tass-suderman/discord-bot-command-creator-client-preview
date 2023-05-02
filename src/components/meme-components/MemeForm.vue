@@ -68,22 +68,10 @@
           </div>
         </div>
         <b-btn-group v-if="memeFormType==='Create' || memeFormType==='Edit'">
-          <b-btn @click="saveMeme" :disabled="(!potentialMeme.mImageRoute||!potentialMeme.mDescription||!potentialMeme.tags)" variant="success" ><b-icon-save-fill/> Save Meme</b-btn>
+          <b-btn disabled variant="success" ><b-icon-save-fill/> Save Meme</b-btn>
           <b-btn @click="clearMeme" v-if="memeFormType==='Create'" variant="danger"> <b-icon-x-circle/> Clear Meme</b-btn>
-          <b-btn @click="deleteConfirm" v-if="memeFormType==='Edit'" variant="danger"> <b-icon-x-circle/> Delete Meme</b-btn>
+          <b-btn disabled v-if="memeFormType==='Edit'" variant="danger"> <b-icon-x-circle/> Delete Meme</b-btn>
         </b-btn-group>
-
-        <b-modal title="Delete Meme" ok-variant="danger" cancel-variant="primary"
-                 v-model="showConfirmDelete" @ok="deleteMeme(potentialMeme)">
-          <template #modal-cancel>
-            <b-icon-x-square-fill /> Cancel
-          </template>
-
-          <template #modal-ok>
-            <b-icon-trash-fill /> Delete
-          </template>
-          Are you sure you want to delete <strong>{{potentialMeme.mDescription}}</strong> ?
-        </b-modal>
 
       </b-form-group>
 
@@ -133,40 +121,10 @@ export default class MemeForm extends Vue {
     this.potentialMeme.tags = addedTags;
   }
 
-  async saveMeme() {
-    const newMeme = Object.assign(new Meme(), this.potentialMeme);
-    try {
-      const violations = await validate(newMeme);
-      if (violations.length) {
-        this.validationErr = this.$store.state.mapValidationErrorArray(violations);
-      } else {
-        await this.$store.dispatch('saveMemeToAPI', { newMeme });
-        await this.$router.push(this.$store.state.MEMES_PATH);
-        this.$emit('saveMeme');
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   clearMeme() {
     this.potentialMeme = new Meme();
     this.iWasInThePoolJerry += 1;
     this.$forceUpdate();
-  }
-
-  deleteConfirm() {
-    this.showConfirmDelete = true;
-  }
-
-  async deleteMeme(meme:Meme) {
-    await this.$store.dispatch('deleteMemeFromAPI', { meme });
-    if (this.$store.state.bigBadOopsie.length) {
-      await window.alert(this.$store.state.bigBadOopsie);
-      this.$store.commit('setOopsie', '');
-    } else {
-      await this.$router.push(this.$store.state.MEMES_PATH);
-    }
   }
 }
 </script>

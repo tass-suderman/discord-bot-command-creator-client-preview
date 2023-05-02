@@ -15,8 +15,8 @@
         <b-card-footer><b-card-text>Command brought to you by:</b-card-text>
           <CreatorCard :creator="command.cCreator"></CreatorCard>
           <b-btn-group v-if="command.cCreator.uID===$store.state.sessionUser.uID">
-            <b-btn class="" variant="primary" @click="$emit('editCommand',command.commandID)">Edit command</b-btn>
-            <b-btn class="btn-link" variant="danger" @click="$emit('deleteConfirm',command)">Delete command</b-btn>
+            <b-btn disabled class="" variant="primary" @click="$emit('editCommand',command.commandID)">Edit command</b-btn>
+            <b-btn disabled class="btn-link" variant="danger" @click="$emit('deleteConfirm',command)">Delete command</b-btn>
           </b-btn-group>
           <b-btn-group v-else>
             <b-btn class="" variant="primary" @click="$emit('viewCommand',command.commandID)">View command</b-btn>

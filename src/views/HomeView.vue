@@ -8,7 +8,7 @@
           <b-btn class="row w-75 m-3 p-4" @click="$router.push($store.state.MEMES_PATH)"><b-icon-emoji-laughing-fill/> <h3>Memes</h3></b-btn>
           <b-btn class="row w-75 m-3 p-4" @click="$router.push($store.state.COMMANDS_PATH)"><b-icon-command/><h3>Commands</h3></b-btn>
           <b-btn class="row w-75 m-3 p-4" @click="$router.push($store.state.TAGS_PATH)"><b-icon-tags-fill/>  <h3>Tags</h3></b-btn>
-          <b-btn variant="danger" class="w-50 m-5" @click="logOut"><b-icon-door-open-fill/><h3>Log Out</h3></b-btn>
+          <b-btn disabled variant="danger" class="w-50 m-5" ><b-icon-door-open-fill/><h3>Log Out</h3></b-btn>
         </b-btn-group>
       </b-card-body>
     </b-card>
@@ -26,9 +26,5 @@ import { Component, Vue } from 'vue-property-decorator';
   },
 })
 export default class HomeView extends Vue {
-  async logOut() {
-    this.$store.commit('setSessionUser', {});
-    await this.$router.push(this.$store.state.LOGIN_PATH);
-  }
 }
 </script>

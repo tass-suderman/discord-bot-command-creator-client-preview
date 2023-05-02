@@ -60,15 +60,15 @@
           </b-card-footer>
           <b-btn-group class="row mt-4 d-block" v-if="commandFormType==='Create' || commandFormType==='Edit'">
 
-            <b-btn :disabled="(!potentialCommand.meme||!potentialCommand.cName||!potentialCommand.cText)" class="m-3" @click="saveCommand" variant="success">
+            <b-btn disabled class="m-3" variant="success">
               <b-icon-save-fill />
               Save Command
             </b-btn>
-            <b-btn class="m-3" @click="clearCommand" v-if="commandFormType==='Create'" variant="danger">
+            <b-btn class="m-3" disabled @click="clearCommand" v-if="commandFormType==='Create'" variant="danger">
               <b-icon-x-circle />
               Clear Command
             </b-btn>
-            <b-btn class="m-3" @click="deleteConfirm" v-if="commandFormType==='Edit'" variant="danger">
+            <b-btn disabled class="m-3" @click="deleteConfirm" v-if="commandFormType==='Edit'" variant="danger">
               <b-icon-x-circle />
               Delete Command
             </b-btn>
@@ -80,18 +80,6 @@
         <MemePreview v-for="meme in $store.state.memes" @selectMeme="memeWasSelected" :key="meme.memeID" :meme="meme" select-meme-view="select-meme-view" />
       </b-collapse>
 
-      <b-modal title="Delete Command" ok-variant="danger" cancel-variant="primary"
-               v-model="showConfirmDelete" @ok="deleteCommand(potentialCommand)">
-        <template #modal-cancel>
-          <b-icon-x-square-fill />
-          Cancel
-        </template>
-        <template #modal-ok>
-          <b-icon-trash-fill />
-          Delete
-        </template>
-        Are you sure you want to delete <strong>{{ potentialCommand.cName }}</strong> ?
-      </b-modal>
     </b-card-body>
   </b-card>
 </template>
@@ -104,10 +92,6 @@ import Meme from '@/models/Meme';
 import MemePreview from '@/components/meme-components/MemePreview.vue';
 import { VBToggle } from 'bootstrap-vue';
 
-/**
- * Component For Command Form
- * Reused in several pages, as it doubles as a solid detailed view
- */
 @Component({
   components: { MemePreview },
   async created() {
@@ -133,22 +117,6 @@ export default class CommandForm extends Vue {
 
   validationErr: any = {};
 
-  showConfirmDelete = false;
-
-  async saveCommand() {
-    const newCommand = Object.assign(new Command(), this.potentialCommand);
-    newCommand.meme = Object.assign(new Meme(), this.selectedMeme);
-    const violations = await validate(newCommand);
-    if (!violations.length) {
-      await this.$store.dispatch('saveCommandToAPI', { newCommand });
-      await this.$router.push(this.$store.state.COMMANDS_PATH);
-    } else {
-      this.validationErr = this.$store.state.mapValidationErrorArray(violations);
-      console.log(this.validationErr);
-      console.log(this.validationErr.cName);
-    }
-  }
-
   async clearCommand() {
     this.potentialCommand = new Command();
     this.selectedMeme = new Meme();
@@ -156,24 +124,10 @@ export default class CommandForm extends Vue {
     this.$forceUpdate();
   }
 
-  deleteConfirm() {
-    this.showConfirmDelete = true;
-  }
-
   memeWasSelected(meme: Meme) {
     this.potentialCommand.meme = meme;
     this.selectedMeme = meme;
     this.$root.$emit('bv::toggle::collapse', 'memeOptions');
-  }
-
-  async deleteCommand(command: Command) {
-    await this.$store.dispatch('deleteCommandFromAPI', { command });
-    if (this.$store.state.bigBadOopsie.length) {
-      await window.alert(this.$store.state.bigBadOopsie);
-      this.$store.commit('setOopsie', '');
-    } else {
-      await this.$router.push(this.$store.state.COMMANDS_PATH);
-    }
   }
 }
 

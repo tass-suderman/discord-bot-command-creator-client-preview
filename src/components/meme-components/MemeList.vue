@@ -6,20 +6,10 @@
         <b-card-body class="text-center"><h2>You could change that</h2></b-card-body></b-card></div>
     <div class="row w-100">
       <MemePreview class="col-lg-6 col-md-10" :meme="meme" :select-meme-view="selectMemeView" acc-data="memeList"
-                   @selectMeme="$emit('selectMeme',meme)" @viewMeme="viewMeme" @editMeme="editMeme" @deleteConfirm="deleteConfirm"
+                   @selectMeme="$emit('selectMeme',meme)" @viewMeme="viewMeme" @editMeme="editMeme"
                    v-for="meme in $store.state.memes" :key="meme.memeID"></MemePreview>
     </div>
-    <b-modal title="Delete Meme" ok-variant="danger" cancel-variant="primary"
-             v-model="showConfirmDelete" @ok="deleteMeme(memeThatCouldBeDeleted)">
-      <template #modal-cancel>
-        <b-icon-x-square-fill /> Cancel
-      </template>
 
-      <template #modal-ok>
-        <b-icon-trash-fill /> Delete
-      </template>
-      Are you sure you want to delete <strong>{{memeThatCouldBeDeleted.mDescription}}</strong> ?
-    </b-modal>
   </b-btn-group>
 </template>
 

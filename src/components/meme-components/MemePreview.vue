@@ -34,8 +34,8 @@
             </b-btn-group>
 
             <b-btn-group v-else-if="meme.mCreator.uID===$store.state.sessionUser.uID">
-              <b-btn class="" variant="primary" @click="$emit('editMeme',meme.memeID)">Edit Meme</b-btn>
-              <b-btn class="btn-link" variant="danger" @click="$emit('deleteConfirm',meme)">Delete Meme</b-btn>
+              <b-btn class="" disabled variant="primary" @click="$emit('editMeme',meme.memeID)">Edit Meme</b-btn>
+              <b-btn class="btn-link" disabled variant="danger" @click="$emit('deleteConfirm',meme)">Delete Meme</b-btn>
             </b-btn-group>
 
             <b-btn-group v-else>

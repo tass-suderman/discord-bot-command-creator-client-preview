@@ -10,12 +10,10 @@ Vue.use(Vuex);
 const COOKIE_EXPIRY = '30m';
 Vue.use(VueCookies, { expires: COOKIE_EXPIRY });
 
-const BACKEND_URL = 'http://localhost:3030';
+const BACKEND_URL = 'https://discord-command-server.tass-suderman.ca';
 const MEME_API = `${BACKEND_URL}/memes`;
 const COMMAND_API = `${BACKEND_URL}/commands`;
 const TAG_API = `${BACKEND_URL}/tags`;
-const DISCORD_LOGIN = 'https://discord.com/api/oauth2/authorize?client_id=1049837219948527646&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=token&scope=identify';
-const DISCORD_API = 'https://discord.com/api/v9/users/@me';
 const METHOD_TYPES: string[] = ['GET', 'POST', 'PUT', 'DELETE'];
 const DEFAULT_FETCH_OPTIONS: any = {
   method: 'GET',
@@ -69,9 +67,6 @@ const callAPI = (url: string, method = METHOD_TYPES[0], dataToSend = {}) => {
     }
   }
 
-  if (sessionUser?.sessionToken) {
-    fetchOptions.headers.Authorization = `${sessionUser.tokenType} ${sessionUser.sessionToken}`;
-  }
   return fetch(url, fetchOptions)
     .then(async (res) => {
       const resInfo: any = {
@@ -98,8 +93,6 @@ export default new Vuex.Store({
     MEME_API,
     COMMAND_API,
     TAG_API,
-    DISCORD_API,
-    DISCORD_LOGIN,
     memes,
     searchMemes,
     commands,

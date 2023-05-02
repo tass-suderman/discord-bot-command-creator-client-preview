@@ -3,9 +3,6 @@ import {
   Prop, Vue,
 } from 'vue-property-decorator';
 
-/**
- * Search bar abstract component. I liked how you did it in class and made sure my backend would work with it
- */
 export default abstract class SearchBar extends Vue {
   @Prop({ default: 3 }) readonly minSearchLength!:number;
 
