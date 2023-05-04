@@ -71,6 +71,7 @@
           <b-btn disabled variant="success" ><b-icon-save-fill/> Save Meme</b-btn>
           <b-btn @click="clearMeme" v-if="memeFormType==='Create'" variant="danger"> <b-icon-x-circle/> Clear Meme</b-btn>
         </b-btn-group>
+        <p><b>Note:</b> Saving and editing memes is disabled in the preview version of the software</p>
 
       </b-form-group>
 

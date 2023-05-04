@@ -62,13 +62,14 @@
 
             <b-btn disabled class="m-3" variant="success">
               <b-icon-save-fill />
-              Save Command (Disabled in Preview Version)
+              Save Command
             </b-btn>
             <b-btn class="m-3" @click="clearCommand" v-if="commandFormType==='Create'" variant="danger">
               <b-icon-x-circle />
               Clear Command
             </b-btn>
           </b-btn-group>
+          <p><b>Note:</b> Saving and editing commands is disabled in the preview version of the software</p>
 
         </b-card>
       </div>
