@@ -1,7 +1,3 @@
-/**
- * @author Tass Suderman, Levi Krozser
- * @purpose Command entity for CWEB280FinalProject
- */
 import {
   IsInt, IsNotEmpty, IsOptional, Length, Max, Min,
 } from 'class-validator';

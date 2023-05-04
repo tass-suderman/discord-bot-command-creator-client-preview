@@ -62,15 +62,11 @@
 
             <b-btn disabled class="m-3" variant="success">
               <b-icon-save-fill />
-              Save Command
+              Save Command (Disabled in Preview Version)
             </b-btn>
             <b-btn class="m-3" @click="clearCommand" v-if="commandFormType==='Create'" variant="danger">
               <b-icon-x-circle />
               Clear Command
-            </b-btn>
-            <b-btn disabled class="m-3" @click="deleteConfirm" v-if="commandFormType==='Edit'" variant="danger">
-              <b-icon-x-circle />
-              Delete Command
             </b-btn>
           </b-btn-group>
 
@@ -87,10 +83,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Command from '@/models/Command';
-import { IsOptional, validate } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import Meme from '@/models/Meme';
 import MemePreview from '@/components/meme-components/MemePreview.vue';
-import { VBToggle } from 'bootstrap-vue';
 
 @Component({
   components: { MemePreview },

@@ -70,7 +70,6 @@
         <b-btn-group v-if="memeFormType==='Create' || memeFormType==='Edit'">
           <b-btn disabled variant="success" ><b-icon-save-fill/> Save Meme</b-btn>
           <b-btn @click="clearMeme" v-if="memeFormType==='Create'" variant="danger"> <b-icon-x-circle/> Clear Meme</b-btn>
-          <b-btn disabled v-if="memeFormType==='Edit'" variant="danger"> <b-icon-x-circle/> Delete Meme</b-btn>
         </b-btn-group>
 
       </b-form-group>
@@ -84,7 +83,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Meme from '@/models/Meme';
 import TagPool from '@/components/tag-components/TagPool.vue';
 import Tag from '@/models/Tag';
-import { IsOptional, validate } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 /**
  * Meme Form component. reused in several views as a detailed view of a meme
@@ -106,8 +105,6 @@ export default class MemeForm extends Vue {
   @Prop()
   @IsOptional()
   memeID!: number;
-
-  showConfirmDelete = false;
 
   potentialMeme: Meme = new Meme();
 

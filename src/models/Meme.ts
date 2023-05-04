@@ -1,7 +1,3 @@
-/**
- * @author Tass Suderman, Levi Krozser
- * @purpose Meme entity for CWEB280FinalProject
- */
 import { IsOptional, Length, Matches } from 'class-validator';
 import Tag from './Tag';
 import RegisteredUser from './RegisteredUser';

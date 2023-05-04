@@ -1,33 +1,13 @@
+/* eslint-disable max-len */
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Tag from '@/models/Tag';
 import Command from '@/models/Command';
 import Meme from '@/models/Meme';
-import VueCookies from 'vue-cookies';
 import { ValidationError } from 'class-validator';
 
 Vue.use(Vuex);
-const COOKIE_EXPIRY = '30m';
-Vue.use(VueCookies, { expires: COOKIE_EXPIRY });
 
-const BACKEND_URL = 'https://discord-command-server.tass-suderman.ca';
-const MEME_API = `${BACKEND_URL}/memes`;
-const COMMAND_API = `${BACKEND_URL}/commands`;
-const TAG_API = `${BACKEND_URL}/tags`;
-const METHOD_TYPES: string[] = ['GET', 'POST', 'PUT', 'DELETE'];
-const DEFAULT_FETCH_OPTIONS: any = {
-  method: 'GET',
-  credentials: 'include',
-  referrerPolicy: 'strict-origin-when-cross-origin',
-  headers: {
-    'X-Requested-With': 'XmlHttpRequest',
-    'Content-Type': 'application/json; charset=utf-8',
-  },
-};
-const CONFLICT_ERR = 'This meme cannot be deleted because it is used in commands.';
-const sessionUser = {
-  sessionToken: '', tokenType: '', uID: '', userName: '', tokenExpiry: new Date(),
-};
 const memes: Meme[] = [];
 const searchMemes: Meme[] = [];
 const commands: Command[] = [];
@@ -47,40 +27,26 @@ const DELETE_COMMAND_PATH = '/deletecommand';
 const EDIT_COMMAND_PATH = '/editcommand';
 const VIEW_COMMAND_PATH = '/viewcommand';
 const CREATE_COMMAND_PATH = '/createcommand';
-const LOGIN_PATH = '/login';
-const loading = false;
 
-const callAPI = (url: string, method = METHOD_TYPES[0], dataToSend = {}) => {
-  const fetchOptions: any = { ...DEFAULT_FETCH_OPTIONS };
-
-  method = method.toUpperCase();
-  if (METHOD_TYPES.includes(method)) {
-    fetchOptions.method = method;
-  }
-
-  if (Object.keys(dataToSend).length) {
-    if (fetchOptions.method !== 'GET') {
-      fetchOptions.body = JSON.stringify(dataToSend);
-    } else {
-      url = `${url}/?${(new URLSearchParams(dataToSend)).toString()}`;
-      fetchOptions.body = null;
-    }
-  }
-
-  return fetch(url, fetchOptions)
-    .then(async (res) => {
-      const resInfo: any = {
-        url: res.url,
-        status: res.status,
-        statusText: res.statusText,
-      };
-      if (res.status === 204) return Promise.resolve(resInfo);
-      if (res.ok) return res.json();
-      const error = new Error(`${res.status}: ${res.statusText}`);
-      resInfo.data = await res.json();
-      throw Object.assign(error, resInfo);
-    });
-};
+const mockMemes = JSON.parse('[{"memeID":4,"mDescription":"stick bug, simply chillin","mImageRoute":"https://i.ytimg.com/vi/Tt7bzxurJ1I/maxresdefault.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"bug"},{"tagName":"chillin"}]},{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"rick"},{"tagName":"roll"}]},{"memeID":6,"mDescription":"such doge, very meme","mImageRoute":"https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1024-512,f_auto,q_auto:best/rockcms/2022-01/210602-doge-meme-nft-mb-1715-8afb7e.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"meme"},{"tagName":"wow"}]},{"memeID":7,"mDescription":"sad doge","mImageRoute":"https://i.pinimg.com/originals/5d/7e/93/5d7e934674f0b6ddd90e569e78a4192d.png","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"sad"}]}]').map((c:any) => Object.assign(new Meme(), c));
+const mockMemes4 = Object.assign(new Meme(), JSON.parse('{"memeID":4,"mDescription":"stick bug, simply chillin","mImageRoute":"https://i.ytimg.com/vi/Tt7bzxurJ1I/maxresdefault.jpg","tags":[{"tagName":"bug"},{"tagName":"chillin"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}'));
+const mockMemes5 = Object.assign(new Meme(), JSON.parse('{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif","tags":[{"tagName":"rick"},{"tagName":"roll"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}'));
+const mockMemes6 = Object.assign(new Meme(), JSON.parse('{"memeID":6,"mDescription":"such doge, very meme","mImageRoute":"https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1024-512,f_auto,q_auto:best/rockcms/2022-01/210602-doge-meme-nft-mb-1715-8afb7e.jpg","tags":[{"tagName":"doge"},{"tagName":"meme"},{"tagName":"wow"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}'));
+const mockMemes7 = Object.assign(new Meme(), JSON.parse('{"memeID":7,"mDescription":"sad doge","mImageRoute":"https://i.pinimg.com/originals/5d/7e/93/5d7e934674f0b6ddd90e569e78a4192d.png","tags":[{"tagName":"doge"},{"tagName":"sad"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}'));
+const mockCommands = JSON.parse('[{"commandID":1,"cName":"stickBug","cText":"$self presents a stickbug to $mention0","cMentionsUser":true,"cNumMentions":1,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":4,"mDescription":"stick bug, simply chillin","mImageRoute":"https://i.ytimg.com/vi/Tt7bzxurJ1I/maxresdefault.jpg"}},{"commandID":2,"cName":"secret","cText":"$self tells $mention0 a cool secr-- oh...","cMentionsUser":true,"cNumMentions":1,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif"}},{"commandID":3,"cName":"sadDoge","cText":"$self is sad :(","cMentionsUser":true,"cNumMentions":0,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":7,"mDescription":"sad doge","mImageRoute":"https://i.pinimg.com/originals/5d/7e/93/5d7e934674f0b6ddd90e569e78a4192d.png"}},{"commandID":4,"cName":"rickRoll","cText":"$self is no stranger to love","cMentionsUser":true,"cNumMentions":0,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif"}}]').map((c:any) => Object.assign(new Command(), c));
+const mockCommands1 = Object.assign(new Command(), JSON.parse('{"commandID":1,"cName":"stickBug","cText":"$self presents a stickbug to $mention0","cMentionsUser":true,"cNumMentions":1,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":4,"mDescription":"stick bug, simply chillin","mImageRoute":"https://i.ytimg.com/vi/Tt7bzxurJ1I/maxresdefault.jpg","tags":[{"tagName":"bug"},{"tagName":"chillin"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}}'));
+const mockCommands2 = Object.assign(new Command(), JSON.parse('{"commandID":2,"cName":"secret","cText":"$self tells $mention0 a cool secr-- oh...","cMentionsUser":true,"cNumMentions":1,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif","tags":[{"tagName":"rick"},{"tagName":"roll"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}}'));
+const mockCommands3 = Object.assign(new Command(), JSON.parse('{"commandID":3,"cName":"sadDoge","cText":"$self is sad :(","cMentionsUser":true,"cNumMentions":0,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":7,"mDescription":"sad doge","mImageRoute":"https://i.pinimg.com/originals/5d/7e/93/5d7e934674f0b6ddd90e569e78a4192d.png","tags":[{"tagName":"doge"},{"tagName":"sad"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}}'));
+const mockCommands4 = Object.assign(new Command(), JSON.parse('{"commandID":4,"cName":"rickRoll","cText":"$self is no stranger to love","cMentionsUser":true,"cNumMentions":0,"cCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"meme":{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif","tags":[{"tagName":"rick"},{"tagName":"roll"}],"mCreator":{"uID":"0000000000000007455","userName":"tass-dev"}}}'));
+const mockTags = JSON.parse('[{"tagName":"bug"},{"tagName":"chillin"},{"tagName":"doge"},{"tagName":"meme"},{"tagName":"rick"},{"tagName":"roll"},{"tagName":"sad"},{"tagName":"wow"}]').map((c:any) => Object.assign(new Tag(), c));
+const mockTagsBug = Object.assign(new Tag(), { tagName: 'bug', memes: JSON.parse('[{"memeID":4,"mDescription":"stick bug, simply chillin","mImageRoute":"https://i.ytimg.com/vi/Tt7bzxurJ1I/maxresdefault.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"bug"},{"tagName":"chillin"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsChillin = Object.assign(new Tag(), { tagName: 'chillin', memes: JSON.parse('[{"memeID":4,"mDescription":"stick bug, simply chillin","mImageRoute":"https://i.ytimg.com/vi/Tt7bzxurJ1I/maxresdefault.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"bug"},{"tagName":"chillin"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsDoge = Object.assign(new Tag(), { tagName: 'doge', memes: JSON.parse('[{"memeID":6,"mDescription":"such doge, very meme","mImageRoute":"https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1024-512,f_auto,q_auto:best/rockcms/2022-01/210602-doge-meme-nft-mb-1715-8afb7e.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"meme"},{"tagName":"wow"}]},{"memeID":7,"mDescription":"sad doge","mImageRoute":"https://i.pinimg.com/originals/5d/7e/93/5d7e934674f0b6ddd90e569e78a4192d.png","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"sad"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsMeme = Object.assign(new Tag(), { tagName: 'meme', memes: JSON.parse('[{"memeID":6,"mDescription":"such doge, very meme","mImageRoute":"https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1024-512,f_auto,q_auto:best/rockcms/2022-01/210602-doge-meme-nft-mb-1715-8afb7e.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"meme"},{"tagName":"wow"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsRick = Object.assign(new Tag(), { tagName: 'rick', memes: JSON.parse('[{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"rick"},{"tagName":"roll"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsRoll = Object.assign(new Tag(), { tagName: 'roll', memes: JSON.parse('[{"memeID":5,"mDescription":"Not a meme; sensitive information","mImageRoute":"https://media.tenor.com/_ZMvl-47aY4AAAAd/meme-rick-astley.gif","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"rick"},{"tagName":"roll"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsSad = Object.assign(new Tag(), { tagName: 'sad', memes: JSON.parse('[{"memeID":7,"mDescription":"sad doge","mImageRoute":"https://i.pinimg.com/originals/5d/7e/93/5d7e934674f0b6ddd90e569e78a4192d.png","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"sad"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
+const mockTagsWow = Object.assign(new Tag(), { tagName: 'wow', memes: JSON.parse('[{"memeID":6,"mDescription":"such doge, very meme","mImageRoute":"https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1024-512,f_auto,q_auto:best/rockcms/2022-01/210602-doge-meme-nft-mb-1715-8afb7e.jpg","mCreator":{"uID":"0000000000000007455","userName":"tass-dev"},"tags":[{"tagName":"doge"},{"tagName":"meme"},{"tagName":"wow"}]}]').map((x:any) => Object.assign(new Meme(), x)) });
 
 const mapValidationErrorArray = (errors: ValidationError[]) => Object.fromEntries(errors.map((err) => {
   const msg = err.constraints ? Object.values(err.constraints)[0] : 'Invalid value';
@@ -89,10 +55,6 @@ const mapValidationErrorArray = (errors: ValidationError[]) => Object.fromEntrie
 
 export default new Vuex.Store({
   state: {
-    sessionUser,
-    MEME_API,
-    COMMAND_API,
-    TAG_API,
     memes,
     searchMemes,
     commands,
@@ -112,9 +74,7 @@ export default new Vuex.Store({
     VIEW_COMMAND_PATH,
     CREATE_COMMAND_PATH,
     CREATE_MEME_PATH,
-    LOGIN_PATH,
     mapValidationErrorArray,
-    loading,
   },
   mutations: {
     setMemes(state, memeArr) {
@@ -132,259 +92,85 @@ export default new Vuex.Store({
     setTags(state, tagArr) {
       state.tags = tagArr;
     },
-    setSearchMemes(state, memeArr) {
-      state.searchMemes = memeArr;
-    },
-    setSearchCommands(state, commandArr) {
-      state.searchCommands = commandArr;
-    },
     setTagMemes(state, tag) {
-      const tagObj = Object.assign(new Tag(), tag.newTag);
-      const tagIndex = state.tags.findIndex((t: Tag) => t.tagName === tagObj.tagName);
+      const tagIndex = state.tags.findIndex((t: Tag) => t.tagName === tag.tagName);
       if (tagIndex >= 0) {
-        state.tags[tagIndex] = tagObj;
+        state.tags[tagIndex] = tag;
       }
-    },
-    setLoading(state, toggle) {
-      if (toggle === true || toggle === false) {
-        state.loading = toggle;
-      }
-    },
-    addMeme(state, meme) {
-      state.memes.push(Object.assign(new Meme(), meme));
-    },
-    addCommand(state, command) {
-      state.commands.push(Object.assign(new Command(), command));
-    },
-    addTag(state, tag) {
-      state.tags.push(Object.assign(new Tag(), tag));
-    },
-    editMeme(state, meme) {
-      const memeIndex = state.memes.findIndex((m) => m.memeID === meme.memeID);
-      if (memeIndex >= 0) Object.assign(state.memes[memeIndex], meme);
-    },
-    editCommand(state, command) {
-      const commandIndex = state.commands.findIndex((c) => c.commandID === command.commandID);
-      if (commandIndex >= 0) Object.assign(state.commands[commandIndex], command);
-    },
-    deleteMeme(state, meme) {
-      const memeIndex = state.memes.findIndex((m) => m.memeID === meme.memeID);
-      if (memeIndex >= 0) state.memes.splice(memeIndex, 1);
-    },
-    deleteCommand(state, command) {
-      const commandIndex = state.commands.findIndex((c) => c.commandID === command.commandID);
-      if (commandIndex >= 0) state.commands.splice(commandIndex, 1);
-    },
-    setSessionUser(state, {
-      sessionToken,
-      userName,
-      uID,
-      tokenExpiry,
-      tokenType,
-    }) {
-      state.sessionUser.sessionToken = sessionToken;
-      state.sessionUser.userName = userName;
-      state.sessionUser.uID = uID;
-      state.sessionUser.tokenType = tokenType;
-      state.sessionUser.tokenExpiry = tokenExpiry;
-      Vue.$cookies.set('sessionUser', { accessToken: sessionToken, tokenType, tokenExpiry }, tokenExpiry);
     },
     setOopsie(state, o) {
       state.bigBadOopsie = o;
     },
   },
   actions: {
-    async getMemesFromAPI({
-      state,
-      commit,
-    }) {
-      commit('setLoading', true);
-      try {
-        const memeData = await callAPI(state.MEME_API);
-        const importedMemes = await memeData.map((memeD: any) => Object.assign(new Meme(), memeD));
-        await commit('setMemes', importedMemes);
-      } catch (err: any) {
-        commit('setMemes', []);
-      }
-      commit('setLoading', false);
+    async getMemesFromAPI({ commit }) {
+      commit('setMemes', mockMemes);
     },
-    async getOneMemeFromAPI({ state, commit }, memeID:any) {
-      commit('setLoading', true);
-      try {
-        const memeData = await callAPI(`${state.MEME_API}/${memeID.memeID}`);
-        const importedMeme = Object.assign(new Meme(), memeData);
-        commit('setCurrentMeme', importedMeme);
-      } catch (err: any) {
-        commit('setCurrentMeme', new Meme());
+    async getOneMemeFromAPI({ commit }, memeID:any) {
+      memeID = memeID.memeID;
+      if (memeID === 4 || memeID === '4') {
+        console.log(mockMemes4);
+        commit('setCurrentMeme', mockMemes4);
       }
-      commit('setLoading', false);
+      if (memeID === 5 || memeID === '5') {
+        commit('setCurrentMeme', mockMemes5);
+      }
+      if (memeID === 6 || memeID === '6') {
+        commit('setCurrentMeme', mockMemes6);
+      }
+      if (memeID === 7 || memeID === '7') {
+        commit('setCurrentMeme', mockMemes7);
+      }
     },
-    async getOneCommandFromAPI({ state, commit }, commandID:any) {
-      commit('setLoading', true);
-      try {
-        const commandData = await callAPI(`${state.COMMAND_API}/${commandID.commandID}`);
-        const importedCommand = Object.assign(new Command(), commandData);
-        commit('setCurrentCommand', importedCommand);
-      } catch (err: any) {
-        commit('setCurrentCommand', new Command());
+    async getOneCommandFromAPI({ commit }, commandID:any) {
+      commandID = commandID.commandID;
+      if (commandID === 1 || commandID === '1') {
+        commit('setCurrentCommand', mockCommands1);
       }
-      commit('setLoading', false);
+      if (commandID === 2 || commandID === '2') {
+        commit('setCurrentCommand', mockCommands2);
+      }
+      if (commandID === 3 || commandID === '3') {
+        commit('setCurrentCommand', mockCommands3);
+      }
+      if (commandID === 4 || commandID === '4') {
+        commit('setCurrentCommand', mockCommands4);
+      }
     },
-    async getCommandsFromAPI({
-      state,
-      commit,
-    }) {
-      commit('setLoading', true);
-      try {
-        const commandData = await callAPI(state.COMMAND_API);
-        const importedCommands = commandData.map((commandD: any) => Object.assign(new Command(), commandD));
-        commit('setCommands', importedCommands);
-      } catch (err: any) {
-        commit('setCommands', []);
-      }
-      commit('setLoading', false);
+    async getCommandsFromAPI({ commit }) {
+      commit('setCommands', mockCommands);
     },
-    async getTagsFromAPI({ state, commit }) {
-      commit('setLoading', true);
-      try {
-        const tagData = await callAPI(state.TAG_API);
-        const importedTags = tagData.map((tagD: any) => Object.assign(new Tag(), tagD));
-        commit('setTags', importedTags);
-      } catch (err: any) {
-        commit('setTags', []);
-      }
-      commit('setLoading', false);
+    async getTagsFromAPI({ commit }) {
+      commit('setTags', mockTags);
     },
-    async getFilteredTagsFromAPI({ state, commit }, tagSearch:any) {
-      commit('setLoading', true);
-      try {
-        const where:string = tagSearch.tagSearch;
-        const tagData = await callAPI(state.TAG_API, METHOD_TYPES[0], { where });
-        const importedTags = tagData.map((tagD: any) => Object.assign(new Tag(), tagD));
-        commit('setSearchTags', importedTags);
-      } catch (err: any) {
-        commit('setSearchTags', []);
+    async getTagMemesFromAPI({ commit }, tagName: any) {
+      console.log(tagName);
+      tagName = tagName.tagName;
+      if (tagName === 'bug') {
+        commit('setTagMemes', mockTagsBug);
       }
-      commit('setLoading', false);
-    },
-    async getFilteredMemesFromAPI({ state, commit }, memeSearch:any) {
-      commit('setLoading', true);
-      try {
-        const where:string = memeSearch.memeSearch;
-        const memeData = await callAPI(state.MEME_API, METHOD_TYPES[0], { where });
-        const importedMemes = memeData.map((memeD: any) => Object.assign(new Meme(), memeD));
-        commit('setSearchMemes', importedMemes);
-      } catch (err: any) {
-        commit('setSearchMemes', []);
+      if (tagName === 'chillin') {
+        commit('setTagMemes', mockTagsChillin);
       }
-      commit('setLoading', false);
-    },
-    async getFilteredCommandsFromAPI({ state, commit }, commandSearch:any) {
-      commit('setLoading', true);
-      try {
-        const where:string = commandSearch.commandSearch;
-        const commandData = await callAPI(state.COMMAND_API, METHOD_TYPES[0], { where });
-        const importedCommands = commandData.map((commandD: any) => Object.assign(new Command(), commandD));
-        commit('setSearchCommands', importedCommands);
-      } catch (err: any) {
-        commit('setSearchCommands', []);
+      if (tagName === 'doge') {
+        commit('setTagMemes', mockTagsDoge);
       }
-      commit('setLoading', false);
-    },
-    async getTagMemesFromAPI({ state, commit }, tagName: any) {
-      commit('setLoading', true);
-      try {
-        const tagMemeData = await callAPI(`${state.TAG_API}/${tagName.tagName}`);
-        const importedMemes = tagMemeData.memes.map((memeD: any) => Object.assign(new Meme(), memeD));
-        const newTag = Object.assign(new Tag(), { tagName: tagName.tagName, memes: importedMemes });
-        commit('setTagMemes', { newTag });
-        commit('setLoading', false);
-      } catch (err: any) {
-        const newArr: Meme[] = [];
-        commit('setTagMemes', { newArr, tagName: tagName.tagName });
+      if (tagName === 'meme') {
+        commit('setTagMemes', mockTagsMeme);
       }
-      commit('setLoading', false);
+      if (tagName === 'rick') {
+        commit('setTagMemes', mockTagsRick);
+      }
+      if (tagName === 'roll') {
+        commit('setTagMemes', mockTagsRoll);
+      }
+      if (tagName === 'sad') {
+        commit('setTagMemes', mockTagsSad);
+      }
+      if (tagName === 'wow') {
+        commit('setTagMemes', mockTagsWow);
+      }
     },
 
-    async saveMemeToAPI({ commit }, newMeme: any) {
-      commit('setLoading', true);
-      const { mDescription } = newMeme.newMeme;
-      const { mImageRoute } = newMeme.newMeme;
-      const mTags = newMeme.newMeme.tags;
-      const meme: Meme = Object.assign(new Meme(), {
-        mDescription,
-        mImageRoute,
-        tags: mTags,
-      });
-      if (newMeme.newMeme.memeID) {
-        meme.memeID = newMeme.newMeme.memeID;
-      }
-
-      const hasMemeID = !!meme.memeID;
-      const url = `${MEME_API}/${meme.memeID ?? ''}`;
-      const dataToSend: any = {
-        mDescription,
-        mImageRoute,
-        tags: mTags,
-      };
-      if (hasMemeID) dataToSend.memeID = meme.memeID;
-      const data = await callAPI(url, hasMemeID ? METHOD_TYPES[2] : METHOD_TYPES[1], dataToSend);
-      commit(hasMemeID ? 'editMeme' : 'addMeme', data);
-      commit('setLoading', false);
-    },
-    async saveCommandToAPI({ commit }, newCommand: any) {
-      commit('setLoading', true);
-      if (!newCommand.newCommand.meme) {
-        commit('setErrors', { meme: 'Meme must be provided' });
-        return;
-      }
-      const hasCommandID = !!newCommand.newCommand.commandID;
-      const { cText, cName } = newCommand.newCommand;
-      const commandToSend: any = {
-        cText,
-        cName,
-        memeID: newCommand.newCommand.meme.memeID,
-      };
-      if (hasCommandID) commandToSend.commandID = newCommand.newCommand.commandID;
-      const url = `${COMMAND_API}/${newCommand.newCommand.commandID ?? ''}`;
-
-      const data = await callAPI(url, hasCommandID ? METHOD_TYPES[2] : METHOD_TYPES[1], commandToSend);
-      commit(hasCommandID ? 'editCommand' : 'addCommand', data);
-      commit('setLoading', false);
-    },
-    async deleteMemeFromAPI({
-      commit,
-      dispatch,
-      state,
-    }, meme: any) {
-      commit('setLoading', true);
-      try {
-        await callAPI(`${state.MEME_API}/${meme.meme.memeID}`, METHOD_TYPES[3]);
-        commit('deleteMeme', meme.meme);
-      } catch (e) {
-        await dispatch('getMemesFromAPI');
-        await dispatch('conflictOopsie');
-      }
-      commit('setLoading', false);
-    },
-    async conflictOopsie({ commit }) {
-      commit('setOopsie', CONFLICT_ERR);
-    },
-    async deleteCommandFromAPI({
-      commit,
-      dispatch,
-      state,
-    }, command: any) {
-      commit('setLoading', false);
-      try {
-        await callAPI(`${state.COMMAND_API}/${command.command.commandID}`, METHOD_TYPES[3]);
-        commit('deleteCommand', command);
-      } catch (err:any) {
-        await dispatch('getCommandsFromAPI');
-        commit('setLoading', false);
-        throw new Error(err.message);
-      }
-      commit('setLoading', false);
-    },
   },
 });

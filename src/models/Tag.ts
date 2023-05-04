@@ -1,7 +1,3 @@
-/**
- * @author Tass Suderman, Levi Krozser
- * @purpose Tag entity for CWEB280FinalProject
- */
 import { IsAlphanumeric, Length } from 'class-validator';
 import Meme from './Meme';
 

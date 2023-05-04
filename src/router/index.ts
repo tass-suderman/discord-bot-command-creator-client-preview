@@ -1,12 +1,5 @@
 import { NavigationGuardNext, Route, RouteConfig } from 'vue-router';
 
-/**
- * inspired by
- * // https://forum.quasar-framework.org/topic/4160/solved-access-vuex-store-in-router-js/7
- * used to access store elements in the router.
- * Creates all routes and export them
- * @param store
- */
 export default (store:any) => {
   const refreshMemes = async (to:Route, from:Route, next:NavigationGuardNext<Vue>) => {
     await store.dispatch('getMemesFromAPI', this, { root: true });
@@ -48,19 +41,10 @@ export default (store:any) => {
       beforeEnter: refreshCommandsandMemes,
 
     },
-
     {
       path: store.state.CREATE_COMMAND_PATH,
       name: 'Create Command',
       component: () => import('../views/command-views/CreateCommandView.vue'),
-      beforeEnter: refreshCommandsandMemes,
-
-    },
-
-    {
-      path: `${store.state.EDIT_COMMAND_PATH}/:commandID`,
-      name: 'Edit Command',
-      component: () => import('../views/command-views/EditCommandView.vue'),
       beforeEnter: refreshCommandsandMemes,
 
     },
@@ -70,13 +54,6 @@ export default (store:any) => {
       component: () => import('../views/command-views/DetailedCommandView.vue'),
       beforeEnter: refreshCommandsandMemes,
 
-    },
-
-    {
-      path: `${store.state.EDIT_MEME_PATH}/:memeID`,
-      name: 'Edit Meme',
-      component: () => import('../views/meme-views/EditMemeView.vue'),
-      beforeEnter: refreshMemes,
     },
     {
       path: `${store.state.VIEW_MEME_PATH}/:memeID`,
