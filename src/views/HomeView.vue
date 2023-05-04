@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <b-card class="w-100">
-      <b-card-header class="text-center"><h1>Welcome to Discordissido</h1></b-card-header>
+      <b-card-header class="text-center"><h1>Welcome to Discordissimo</h1></b-card-header>
       <b-card-body>
         <b-card-sub-title sub-title-text-variant="danger" class="text-center"><h3>Where are you headed?</h3></b-card-sub-title>
         <b-btn-group class="row justify-content-center w-100">
